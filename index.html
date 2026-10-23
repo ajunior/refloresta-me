@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Refloresta.me — ajude Urihi a trazer a Amazônia de volta</title>
+  <meta name="description" content="Jogo educativo gratuito para crianças: ajude Urihi, um menino Yanomami, a apagar o fogo, plantar sementes, libertar animais e limpar os rios da Amazônia.">
+  <meta name="theme-color" content="#140e14">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icon32.png">
+  <link rel="apple-touch-icon" href="assets/icon180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://refloresta.me/">
+  <meta property="og:title" content="Refloresta.me">
+  <meta property="og:description" content="Ajude Urihi a trazer a floresta de volta! Um jogo gratuito para crianças sobre a Amazônia.">
+  <meta property="og:image" content="https://refloresta.me/assets/og.png">
+  <meta property="og:locale" content="pt_BR">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --burnt: #140e14;
+      --soil: #2a1d22;
+      --forest: #0f2a19;
+      --panel: rgba(255, 255, 255, 0.05);
+      --line: rgba(255, 255, 255, 0.12);
+      --text: #f3ece0;
+      --muted: #b9ad9c;
+      --green: #5cc25a;
+      --yellow: #f2c94c;
+      --fire: #f08a2c;
+      --water: #4aa3e0;
+      --pixel: "Press Start 2P", monospace;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 18px/1.6 Nunito, system-ui, sans-serif;
+      /* a página vai do queimado ao verde, como o jogo */
+      background: linear-gradient(180deg, var(--burnt) 0%, var(--soil) 30%, #1a2a1c 65%, var(--forest) 100%);
+      background-color: var(--burnt);
+    }
+    img { max-width: 100%; height: auto; }
+    img.px { image-rendering: pixelated; }
+    a { color: var(--yellow); }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+    h1, h2, h3 { font-family: var(--pixel); font-weight: 400; line-height: 1.5; }
+    h2 { font-size: clamp(16px, 3.4vw, 22px); margin: 0 0 24px; color: var(--green); }
+    h3 { font-size: 13px; margin: 12px 0 8px; }
+    section { padding: 56px 0; }
+
+    /* topo */
+    .top { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+    .brand { display: flex; align-items: center; gap: 10px; font-family: var(--pixel); font-size: 13px; color: var(--green); text-decoration: none; }
+    .brand img { width: 32px; height: 32px; }
+    .brand b { color: var(--yellow); font-weight: 400; }
+    .btn {
+      display: inline-block; font-family: var(--pixel); font-size: 14px; text-decoration: none;
+      color: #10200f; background: var(--green); padding: 16px 22px;
+      box-shadow: 0 5px 0 #2e7a2c; border-radius: 4px; transition: transform .1s, box-shadow .1s;
+    }
+    .btn:hover { transform: translateY(2px); box-shadow: 0 3px 0 #2e7a2c; }
+    .btn:active { transform: translateY(5px); box-shadow: none; }
+    .btn.small { font-size: 11px; padding: 10px 14px; box-shadow: 0 4px 0 #2e7a2c; }
+
+    /* destaque */
+    .hero { display: grid; grid-template-columns: 1fr 1.15fr; gap: 40px; align-items: center; padding: 40px 0 64px; }
+    .hero h1 { font-size: clamp(24px, 5vw, 40px); margin: 0 0 18px; color: var(--green); text-shadow: 0 4px 0 #0b1a0b; }
+    .hero h1 b { color: var(--yellow); font-weight: 400; }
+    .hero p.lead { font-size: 21px; margin: 0 0 26px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 26px 0 0; padding: 0; list-style: none; }
+    .chips li { font-size: 14px; font-weight: 700; padding: 5px 12px; border: 1px solid var(--line); border-radius: 99px; color: var(--muted); }
+    .screen { width: 100%; border: 4px solid #000; border-radius: 6px; box-shadow: 0 0 0 4px var(--soil), 0 18px 40px rgba(0, 0, 0, 0.5); display: block; }
+
+    /* passos */
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
+    .card .ico { height: 72px; display: flex; align-items: flex-end; }
+    .card .ico img { max-height: 72px; }
+    .card p { margin: 0; color: var(--muted); font-size: 16px; }
+    .card h3 { color: var(--text); }
+
+    /* história */
+    .story { display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center; }
+    .story img { width: 120px; }
+    .story p { margin: 0 0 12px; }
+
+    /* galeria */
+    .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .gallery figure { margin: 0; }
+    .gallery img { width: 100%; display: block; border-radius: 4px; border: 2px solid #000; }
+    .gallery figcaption { font-size: 14px; color: var(--muted); padding-top: 6px; }
+
+    /* animais */
+    .animals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .animal { display: flex; gap: 14px; align-items: center; }
+    .animal img { width: 76px; flex: none; }
+    .animal p { margin: 0; font-size: 16px; color: var(--muted); }
+    .animal strong { color: var(--text); display: block; }
+
+    /* publicidade: discreta, rotulada, longe do botão de jogar */
+    .ad[hidden] { display: none; }
+    .ad { margin: 8px auto; max-width: 760px; text-align: center; }
+    .ad small { display: block; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: rgba(255, 255, 255, 0.35); margin-bottom: 6px; }
+    .ad-slot { min-height: 90px; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--line); border-radius: 6px; color: rgba(255, 255, 255, 0.3); font-size: 14px; }
+
+    /* pais e professores */
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    ul.check { list-style: none; padding: 0; margin: 0; }
+    ul.check li { padding-left: 30px; position: relative; margin-bottom: 10px; }
+    ul.check li::before { content: ""; position: absolute; left: 4px; top: 9px; width: 10px; height: 10px; background: var(--green); box-shadow: 4px 4px 0 #2e7a2c; }
+    .keys { width: 100%; border-collapse: collapse; font-size: 16px; }
+    .keys td { padding: 8px 0; border-bottom: 1px solid var(--line); }
+    .keys td:first-child { font-family: var(--pixel); font-size: 11px; color: var(--yellow); width: 45%; }
+    .note { color: var(--muted); font-size: 16px; }
+
+    .cta { text-align: center; padding: 64px 0; }
+    .cta img { width: 100%; max-width: 540px; margin: 0 auto 28px; display: block; }
+    footer { border-top: 1px solid var(--line); padding: 28px 0 40px; font-size: 14px; color: var(--muted); }
+    footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; }
+
+    @media (max-width: 860px) {
+      .hero, .two { grid-template-columns: 1fr; }
+      .hero { padding-top: 16px; gap: 28px; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .gallery, .animals { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 520px) {
+      body { font-size: 17px; }
+      .wrap { padding: 0 16px; }
+      .steps, .gallery, .animals { grid-template-columns: 1fr; }
+      .story { grid-template-columns: 1fr; text-align: center; }
+      .story img { margin: 0 auto; width: 96px; }
+      .brand span { display: none; }
+      section { padding: 40px 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="wrap top">
+    <a class="brand" href="./"><img class="px" src="assets/icon180.png" alt=""><span>REFLORESTA<b>.ME</b></span></a>
+    <a class="btn small" href="jogar/">▶ Jogar</a>
+  </header>
+
+  <main>
+    <div class="wrap hero">
+      <div>
+        <h1>REFLORESTA<b>.ME</b></h1>
+        <p class="lead">Ajude <strong>Urihi</strong>, um menino Yanomami, a trazer a Amazônia de volta: apague o fogo, plante sementes, liberte os animais e limpe os rios.</p>
+        <a class="btn" href="jogar/">▶ Jogar agora</a>
+        <ul class="chips">
+          <li>Grátis</li>
+          <li>Sem cadastro</li>
+          <li>Computador, tablet e celular</li>
+          <li>Para crianças a partir de 6 anos</li>
+        </ul>
+      </div>
+      <img class="screen" src="site/img/shot-green.webp" width="960" height="560" alt="Urihi numa floresta que voltou a ficar verde, com uma árvore sobrevivente e um foco de fogo à frente">
+    </div>
+
+    <section>
+      <div class="wrap story">
+        <img class="px" src="site/img/hero.png" alt="Urihi, o herói do jogo">
+        <div>
+          <h2>A história</h2>
+          <p>O garimpo, o gado e o fogo devastaram um pedaço da floresta. Os animais perderam a casa, os rios ficaram sujos e a chuva diminuiu.</p>
+          <p>Mas ainda há sementes, igarapés e vida. Urihi decide refazer a floresta, árvore por árvore, até chegar de volta ao <strong>xapono</strong>, a grande casa do seu povo, onde todos comemoram juntos.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2>Como se joga</h2>
+        <div class="steps">
+          <div class="card">
+            <div class="ico"><img class="px" src="site/img/fire.png" alt="" style="height:60px"></div>
+            <h3 style="color:var(--fire)">Apague o fogo</h3>
+            <p>Encha a cabaça nos igarapés e jogue água nas chamas.</p>
+          </div>
+          <div class="card">
+            <div class="ico"><img class="px" src="site/img/sapling.png" alt=""></div>
+            <h3 style="color:var(--green)">Plante</h3>
+            <p>Cada castanha vira uma muda, e cada muda vira árvore. Suba nas copas para alcançar lugares altos.</p>
+          </div>
+          <div class="card">
+            <div class="ico"><img class="px" src="site/img/arara.png" alt="" style="height:60px"></div>
+            <h3 style="color:var(--yellow)">Liberte os animais</h3>
+            <p>Abra as gaiolas. Cada animal acompanha Urihi e ajuda com um poder.</p>
+          </div>
+          <div class="card">
+            <div class="ico"><img class="px" src="site/img/water.png" alt="" style="height:48px"></div>
+            <h3 style="color:var(--water)">Limpe os rios</h3>
+            <p>Plante árvores na beira da água suja do garimpo. A mata ciliar ajuda o rio a ficar limpo de novo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2>Os animais ajudam</h2>
+        <div class="animals">
+          <div class="animal"><img class="px" src="site/img/arara.png" alt=""><p><strong>Arara</strong>Planta sementes voando.</p></div>
+          <div class="animal"><img class="px" src="site/img/tucano.png" alt=""><p><strong>Tucano</strong>Também planta por você.</p></div>
+          <div class="animal"><img class="px" src="site/img/macaco.png" alt=""><p><strong>Macaco</strong>Encontra sementes.</p></div>
+          <div class="animal"><img class="px" src="site/img/anta.png" alt=""><p><strong>Anta</strong>A "jardineira da floresta" também acha sementes.</p></div>
+          <div class="animal"><img class="px" src="site/img/preguica.png" alt=""><p><strong>Preguiça</strong>Faz as mudas crescerem mais rápido.</p></div>
+          <div class="animal"><img class="px" src="site/img/onca.png" alt=""><p><strong>Onça</strong>Espanta as brasas.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2>Veja o jogo</h2>
+        <div class="gallery">
+          <figure><img src="site/img/shot-chuva.webp" width="960" height="560" loading="lazy" alt="Cena da história: árvores soltando água que vira chuva"><figcaption>Os rios voadores</figcaption></figure>
+          <figure><img src="site/img/shot-garimpo.webp" width="960" height="560" loading="lazy" alt="Fase 2 com uma draga de garimpo e água contaminada"><figcaption>Fase 2: o rio do garimpo</figcaption></figure>
+          <figure><img src="site/img/shot-card.webp" width="960" height="560" loading="lazy" alt="Cartão do Caderno da Floresta sobre a onça-pintada"><figcaption>O Caderno da Floresta</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      ESPAÇO PUBLICITÁRIO
+      Fica só nesta página, que é lida por adultos. O jogo (/jogar/) não tem anúncios.
+      Para usar Google AdSense: substitua o conteúdo de .ad-slot pelo bloco de anúncio e,
+      como o site é voltado a crianças, marque-o como "direcionado a crianças" no AdSense
+      (só anúncios não personalizados). Se preferir um patrocinador direto, coloque aqui
+      a logo com link. Depois, tire o atributo "hidden" abaixo para o espaço aparecer.
+    -->
+    <aside class="wrap ad" aria-label="Publicidade" hidden>
+      <small>Publicidade</small>
+      <div class="ad-slot">Espaço para anúncio</div>
+    </aside>
+
+    <section>
+      <div class="wrap two">
+        <div>
+          <h2>Para pais e professores</h2>
+          <p>Enquanto joga, a criança descobre:</p>
+          <ul class="check">
+            <li>Como as árvores fazem chover longe dali, pelos <strong>rios voadores</strong></li>
+            <li>Que a maior parte do fogo na Amazônia é provocada por pessoas</li>
+            <li>Como araras, macacos e antas <strong>espalham sementes</strong></li>
+            <li>Por que o <strong>mercúrio do garimpo</strong> faz mal aos rios e às pessoas</li>
+            <li>Que a <strong>mata ciliar</strong> protege os rios</li>
+            <li>Que povos indígenas, como os Yanomami, vivem e cuidam da floresta</li>
+          </ul>
+          <p class="note">Os fatos aparecem em cartões curtos, que dá para ler junto com a criança. O jogo não tem anúncios, cadastro nem coleta de dados. Funciona direto no navegador, sem instalar nada.</p>
+        </div>
+        <div>
+          <h2>Controles</h2>
+          <table class="keys">
+            <tr><td>SETAS</td><td>andar</td></tr>
+            <tr><td>ESPAÇO / Z</td><td>pular</td></tr>
+            <tr><td>X</td><td>jogar água (com CIMA: mais alto)</td></tr>
+            <tr><td>C</td><td>lançar semente</td></tr>
+            <tr><td>P</td><td>pausa</td></tr>
+            <tr><td>M</td><td>ligar ou desligar a música</td></tr>
+          </table>
+          <p class="note">No celular e no tablet, os botões aparecem na tela. Segure o aparelho na horizontal.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2>Os Yanomami</h2>
+        <p>Os Yanomami vivem na floresta amazônica, no norte do Brasil e no sul da Venezuela. <em>Urihi</em> quer dizer "terra-floresta" na língua Yanomami: a floresta como casa de todos os seres. Nos últimos anos, o garimpo ilegal envenenou rios e trouxe doenças para as comunidades.</p>
+        <p>Para saber mais: <a href="https://pib.socioambiental.org/pt/Povo:Yanomami" rel="noopener">Povos Indígenas no Brasil (ISA)</a>.</p>
+      </div>
+    </section>
+
+    <div class="wrap cta">
+      <img class="screen" src="site/img/shot-festa.webp" width="960" height="560" loading="lazy" alt="Festa no xapono com a floresta verde de novo">
+      <a class="btn" href="jogar/">▶ Jogar agora</a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>Refloresta.me · um jogo gratuito sobre a Amazônia</span>
+      <span>Código <a href="https://github.com/ajunior/refloresta.me/blob/main/LICENSE" rel="license">MIT</a> · Arte e textos <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.pt-br" rel="license">CC BY-NC-SA 4.0</a></span>
+    </div>
+  </footer>
+</body>
+</html>

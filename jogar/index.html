@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Refloresta.me</title>
+  <meta name="description" content="Jogo educativo gratuito: ajude Urihi, um menino Yanomami, a trazer a Amazônia de volta. Apague o fogo, plante sementes, liberte os animais e limpe os rios.">
+  <meta name="theme-color" content="#0d0a0e">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/icon32.png">
+  <link rel="apple-touch-icon" href="../assets/icon180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://refloresta.me/jogar/">
+  <meta property="og:title" content="Refloresta.me">
+  <meta property="og:description" content="Ajude Urihi a trazer a floresta de volta! Um jogo para crianças sobre a Amazônia.">
+  <meta property="og:image" content="https://refloresta.me/assets/og.png">
+  <meta property="og:locale" content="pt_BR">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #0d0a0e;
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    canvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      display: block;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <script src="../src/sprites.js"></script>
+  <script src="../src/audio.js"></script>
+  <script src="../src/levels.js"></script>
+  <script src="../src/story.js"></script>
+  <script src="../src/game.js"></script>
+</body>
+</html>
