@@ -4,6 +4,8 @@ Jogo educativo gratuito para crianças sobre a Amazônia. Urihi, um menino Yanom
 
 Jogue em **https://refloresta.me**.
 
+Feito por [Adjamilton Junior](https://www.linkedin.com/in/a-jr/).
+
 ## Rodar localmente
 
 É só HTML e JavaScript, sem instalação nem build:

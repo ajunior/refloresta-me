@@ -207,6 +207,6 @@ const OUTRO = [
   },
   {
     scene: 'title',
-    lines: ['Obrigado por jogar Refloresta.me!'],
+    lines: ['Obrigado por jogar Refloresta.me!', 'Um jogo de Adjamilton Junior'],
   },
 ];
