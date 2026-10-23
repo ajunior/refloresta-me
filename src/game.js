@@ -26,6 +26,12 @@ const g = view.getContext('2d');
 g.imageSmoothingEnabled = false;
 const params = new URLSearchParams(location.search);
 
+// Conta eventos do jogo no GoatCounter (sem cookies). Desligado nos modos de teste (?play, ?level...).
+function track(name) {
+  if (params.toString() || !window.goatcounter?.count) return;
+  window.goatcounter.count({ path: name, title: name, event: true });
+}
+
 // ---------------------------------------------------------------- tela
 function resize() {
   const dpr = window.devicePixelRatio || 1;
@@ -861,6 +867,7 @@ function startGame() {
 
 function startLevel(i) {
   levelIdx = i;
+  track(`fase-${i + 1}-inicio`);
   loadLevel(LEVELS[i]);
   stats = { fires: 0, trees: 0, animals: 0, survivors: 0, deaths: 0, rivers: 0 };
   drops = []; seeds = []; particles = [];
@@ -881,6 +888,7 @@ function startLevel(i) {
 
 function finishLevel() {
   winT = 0;
+  track(`fase-${levelIdx + 1}-fim`);
   stats.pct = forestPct();
   if (L.def.goalType === 'xapono') {
     state = 'party';
