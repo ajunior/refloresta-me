@@ -55,14 +55,18 @@ addEventListener('keydown', e => {
   Sfx.unlock();
 });
 addEventListener('keyup', e => { keys[e.code] = false; });
-addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
+addEventListener('blur', releaseAll);
+document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
 
 // ---------------------------------------------------------------- toque (celular e tablet)
 let touchMode = false;
-const pointers = new Map();
+let touches = [];          // dedos na tela agora, em coordenadas do jogo
+const touchHeld = {};      // separado de keys: soltar o teclado não mexe nos botões
+// ◀ e ▶ usam áreas retangulares encostadas, para o polegar poder escorregar sem soltar
+const DPAD_TOP = H - 54;
 const TOUCH_BTNS = [
-  { code: 'ArrowLeft', x: 30, y: H - 30, r: 19, icon: 'left' },
-  { code: 'ArrowRight', x: 74, y: H - 30, r: 19, icon: 'right' },
+  { code: 'ArrowLeft', x: 30, y: H - 30, r: 19, icon: 'left', zone: [0, DPAD_TOP, 52, H] },
+  { code: 'ArrowRight', x: 74, y: H - 30, r: 19, icon: 'right', zone: [52, DPAD_TOP, 108, H] },
   { code: 'ArrowUp', x: 52, y: H - 68, r: 14, icon: 'up' },
   { code: 'Space', x: W - 30, y: H - 30, r: 20, label: 'PULO', color: '#5cc25a' },
   { code: 'KeyX', x: W - 74, y: H - 28, r: 17, label: 'ÁGUA', color: '#3d95d6' },
@@ -70,47 +74,58 @@ const TOUCH_BTNS = [
   { code: 'KeyP', x: 254, y: 15, r: 10, label: 'II', color: '#9a9498' },
 ];
 
-function toGame(e) {
+function toGame(t) {
   const r = cv.getBoundingClientRect();
-  return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H };
+  return { x: (t.clientX - r.left) / r.width * W, y: (t.clientY - r.top) / r.height * H };
 }
 
 const touchUI = () => state === 'play' && !card && !paused;
 
+function onButton(b, p) {
+  if (b.zone) return p.x >= b.zone[0] && p.x < b.zone[2] && p.y >= b.zone[1] && p.y <= b.zone[3];
+  return Math.hypot(p.x - b.x, p.y - b.y) < b.r * 1.35;
+}
+
 function syncTouchButtons() {
+  const ui = touchUI();
   for (const b of TOUCH_BTNS) {
-    const on = touchUI() && [...pointers.values()].some(p => Math.hypot(p.x - b.x, p.y - b.y) < b.r * 1.35);
-    if (on && !b.on) { keys[b.code] = true; pressed[b.code] = true; }
-    if (!on && b.on) keys[b.code] = false;
+    const on = ui && touches.some(p => onButton(b, p));
+    if (on && !touchHeld[b.code]) pressed[b.code] = true;
+    touchHeld[b.code] = on;
     b.on = on;
   }
 }
 
-cv.addEventListener('pointerdown', e => {
-  if (e.pointerType !== 'touch') return;
-  e.preventDefault();
-  Sfx.unlock();
-  if (!touchMode) {
-    touchMode = true;
-    document.documentElement.requestFullscreen?.().then(() => screen.orientation?.lock?.('landscape')).catch(() => {});
-  }
-  const p = toGame(e);
-  pointers.set(e.pointerId, p);
-  if (paused) pressed.KeyP = true;
-  else if (state === 'story' && p.x < 90 && p.y > H - 34) pressed.Escape = true;
-  else if (!touchUI()) pressed.Enter = true;
+function releaseAll() {
+  for (const k in keys) keys[k] = false;
+  touches = [];
   syncTouchButtons();
-});
-cv.addEventListener('pointermove', e => {
-  if (!pointers.has(e.pointerId)) return;
-  pointers.set(e.pointerId, toGame(e));
-  syncTouchButtons();
-});
-for (const ev of ['pointerup', 'pointercancel']) {
-  cv.addEventListener(ev, e => { pointers.delete(e.pointerId); syncTouchButtons(); });
 }
 
-const held = (...codes) => codes.some(c => keys[c]);
+// Touch Events trazem a lista completa de dedos na tela (e.touches) a cada evento,
+// então um "touchend" perdido não deixa botão preso.
+function onTouch(e) {
+  e.preventDefault();
+  Sfx.unlock();
+  touches = [...e.touches].map(toGame);
+  if (e.type === 'touchstart') {
+    if (!touchMode) {
+      touchMode = true;
+      document.documentElement.requestFullscreen?.().then(() => screen.orientation?.lock?.('landscape')).catch(() => {});
+    }
+    const p = toGame(e.changedTouches[0]);
+    if (paused) pressed.KeyP = true;
+    else if (state === 'story' && p.x < 90 && p.y > H - 34) pressed.Escape = true;
+    else if (!touchUI()) pressed.Enter = true;
+  }
+  syncTouchButtons();
+}
+for (const ev of ['touchstart', 'touchmove', 'touchend', 'touchcancel']) {
+  cv.addEventListener(ev, onTouch, { passive: false });
+}
+cv.addEventListener('contextmenu', e => e.preventDefault());
+
+const held = (...codes) => codes.some(c => keys[c] || touchHeld[c]);
 const hit = (...codes) => codes.some(c => pressed[c]);
 
 // ---------------------------------------------------------------- estado
@@ -973,6 +988,7 @@ const STORY_GREEN = { fire: 0, sad: 0, hero: 0.2 };
 
 function update(dt) {
   time += dt;
+  if (touchMode) syncTouchButtons();
   if (hit('KeyM')) showToast(Sfx.toggleMute() ? 'Música desligada (M)' : 'Música ligada (M)');
   let mg = 0.35;
   if (state === 'story') mg = STORY_GREEN[story.slides[story.i].scene] ?? 0.8;
