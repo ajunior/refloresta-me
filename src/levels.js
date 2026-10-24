@@ -51,7 +51,7 @@ const LEVEL1 = {
     { col: 15, fact: 'igarape' },
     { col: 21, text: 'Pegue a castanha e aperte C para semear o chão queimado' },
     { col: 28, text: 'Regue a árvore sobrevivente: ela vira checkpoint' },
-    { col: 40, text: 'Segure CIMA junto com X para molhar mais alto' },
+    { col: 40, text: 'Segure X e a seta para cima para molhar mais alto' },
     { col: 54, text: 'Toque na gaiola para libertar o animal' },
     { col: 70, text: 'Paredão! Plante uma árvore perto dele e suba pela copa' },
     { col: 148, text: 'A canoa está logo ali!' },

@@ -1574,16 +1574,17 @@ function drawTitle() {
     'Apague o fogo, plante, regue e liberte os animais.',
   ];
   lines.forEach((l, i) => text(l, W / 2, 96 + i * 11, 6, '#ffffff', 'center'));
-  box(W / 2 - 128, 136, 256, 52, 'rgba(15,10,15,0.6)');
+  box(W / 2 - 128, 134, 256, 58, 'rgba(15,10,15,0.6)');
   const ctl = [
     ['SETAS', 'andar'],
     ['ESPAÇO / Z', 'pular'],
-    ['X', 'jogar água (+ CIMA: mais alto)'],
+    ['X', 'jogar água'],
+    ['X + seta para cima', 'molhar mais alto'],
     ['C', 'lançar semente'],
   ];
   ctl.forEach(([k, v], i) => {
-    text(k, W / 2 - 8, 142 + i * 11, 6, '#f2c443', 'right');
-    text(v, W / 2 + 8, 142 + i * 11, 6, '#e8dcc8');
+    text(k, W / 2 - 8, 139 + i * 10, 6, '#f2c443', 'right');
+    text(v, W / 2 + 8, 139 + i * 10, 6, '#e8dcc8');
   });
   if (Math.floor(time * 2) % 2 === 0) text(touchMode ? 'Toque para começar' : 'Pressione ENTER', W / 2, 198, 8, '#fff3a0', 'center');
   text(Sfx.isMuted() ? 'M: ligar música' : 'M: desligar música', W - 6, H - 10, 5, 'rgba(255,255,255,0.5)', 'right');
