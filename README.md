@@ -16,11 +16,22 @@ python3 -m http.server
 
 Depois abra http://localhost:8000 (página inicial) ou http://localhost:8000/jogar/ (o jogo).
 
+## Testes
+
+Com o Google Chrome instalado:
+
+```sh
+test/run.sh
+```
+
+A bateria roda o jogo de verdade no Chrome headless e confere física, água, plantio, animais, toque no celular e o fluxo completo das duas fases. Também dá para abrir `test/test.html` direto no navegador.
+
 ## Estrutura
 
 - `index.html`: página inicial
 - `jogar/index.html`: página do jogo
 - `src/`: código do jogo (motor, áudio, fases, sprites e textos)
+- `test/`: testes automáticos
 - `site/img/`, `assets/`: imagens da página e ícones
 
 ## Licenças

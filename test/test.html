@@ -1,0 +1,131 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Refloresta.me · testes</title>
+<!-- Roda o jogo de verdade, em passos fixos, e confere o resultado. Use ./run.sh -->
+<canvas id="game"></canvas>
+<pre id="out"></pre>
+<script src="../src/sprites.js"></script>
+<script src="../src/audio.js"></script>
+<script src="../src/levels.js"></script>
+<script src="../src/story.js"></script>
+<script src="../src/game.js"></script>
+<script>
+const out = document.getElementById('out');
+let passed = 0, failed = 0;
+function ok(name, cond, detail = '') {
+  cond ? passed++ : failed++;
+  out.textContent += `${cond ? 'PASS' : 'FAIL'} ${name}${detail ? ` (${detail})` : ''}\n`;
+}
+
+// avança o jogo sec segundos segurando (hold) ou apertando uma vez (tap) as teclas
+function run(sec, hold = [], tap = []) {
+  for (const k of hold) keys[k] = true;
+  for (const k of tap) pressed[k] = true;
+  for (let i = 0; i < Math.round(sec * 60); i++) { update(STEP); for (const k in pressed) delete pressed[k]; }
+  for (const k of hold) keys[k] = false;
+}
+function place(col) { checkpoint = { x: col * TS + 3, y: L.top[col] * TS - 18.01 }; spawnPlayer(); P.inv = 0; }
+function climbRight(untilCol, frames = 400) {
+  keys.ArrowRight = true;
+  for (let i = 0; i < frames; i++) {
+    if (P.onGround) { pressed.Space = true; keys.Space = true; } else if (P.vy > 0) keys.Space = false;
+    update(STEP); for (const k in pressed) delete pressed[k];
+    if (P.x > untilCol * TS) break;
+  }
+  keys.ArrowRight = false; keys.Space = false;
+}
+
+params.set('nofacts', '1');
+try {
+  // ---------------------------------------------------------------- Fase 1
+  startGame();
+  run(0.5);
+  ok('Urihi fica no chão', P.onGround);
+  const x0 = P.x; run(1, ['ArrowRight']);
+  ok('anda para a direita', P.x - x0 > 60, `${(P.x - x0).toFixed(0)} px/s`);
+
+  place(7); P.face = 1; run(1.5, ['KeyX']);
+  ok('água apaga o fogo', !L.fires[0].alive);
+
+  place(17); P.water = 10; run(1.5);
+  ok('igarapé enche a cabaça', P.water > 30, `água ${P.water.toFixed(0)}`);
+
+  place(23); P.face = 1; P.seeds = 3; run(0.1, [], ['KeyC']); run(3);
+  ok('semente vira árvore', L.saplings.some(s => s.stage === 2));
+  ok('árvore vira plataforma', L.platforms.length > 0);
+
+  place(29); P.face = 1; P.water = 100; run(2, ['KeyX']);
+  ok('sobrevivente regada floresce', L.survivors[0].bloomed);
+
+  place(58); run(0.2);
+  ok('gaiola da arara abre', L.cages[0].open);
+  place(62); P.face = 1; run(8);
+  ok('arara planta sozinha', L.saplings.length > 1);
+
+  place(91); P.water = 0; P.face = 1; run(0.3, ['ArrowRight']); run(1);
+  ok('igarapé da coluna 92 enche a cabaça', P.water > 30);
+
+  // ---------------------------------------------------------------- toque (TouchEvents reais)
+  const btn = TOUCH_BTNS.find(b => b.code === 'ArrowRight');
+  const R = cv.getBoundingClientRect();
+  const mk = (id, gx, gy) => new Touch({ identifier: id, target: cv, clientX: R.left + gx / W * R.width, clientY: R.top + gy / H * R.height });
+  const fire = (type, active, changed) => cv.dispatchEvent(new TouchEvent(type, { touches: active, changedTouches: changed, cancelable: true, bubbles: true }));
+
+  place(127); let tx0 = P.x;
+  let t1 = mk(1, btn.x, btn.y); fire('touchstart', [t1], [t1]); run(0.5);
+  fire('touchend', [], [t1]); run(0.3);
+  ok('toque no ▶ anda', P.x - tx0 > 20, `${(P.x - tx0).toFixed(0)} px`);
+  ok('soltar o dedo solta o ▶', !held('ArrowRight'));
+
+  // perder o foco com o dedo no botão e tocar de novo
+  place(127);
+  fire('touchstart', [t1], [t1]); run(0.2); dispatchEvent(new Event('blur')); run(0.2);
+  const afterBlur = P.x; t1 = mk(2, btn.x, btn.y); fire('touchstart', [t1], [t1]); run(0.5);
+  ok('toque volta a funcionar depois do blur', P.x - afterBlur > 20);
+
+  // touchend perdido: o próximo evento traz a lista real de dedos
+  const tj = mk(3, W - 30, H - 30); fire('touchstart', [tj], [tj]); run(0.1);
+  ok('dedo fantasma é limpo', !held('ArrowRight'));
+  fire('touchend', [], [tj]);
+
+  // polegar fora do círculo, mas ainda na área do ▶
+  place(127); tx0 = P.x; t1 = mk(4, 100, H - 8); fire('touchstart', [t1], [t1]); run(0.4); fire('touchend', [], [t1]); run(0.2);
+  ok('polegar que escorrega continua andando', P.x - tx0 > 20);
+
+  // ---------------------------------------------------------------- canoa → Fase 2
+  P.x = L.goalX; run(0.1);
+  ok('chegar na canoa vence a fase', state === 'win', state);
+  run(1.5); run(0.1, [], ['Enter']);
+  ok('Enter leva à Fase 2', levelIdx === 1 && state === 'play', `fase ${levelIdx + 1}, ${state}`);
+
+  place(13); P.face = 1; run(1, ['ArrowRight']);
+  ok('mercúrio tira coração', P.hearts < 3);
+  P.hearts = 3;
+  for (const c of [12, 14, 19, 21]) addGreen(c, 0.9, 3);
+  run(2);
+  ok('mata ciliar limpa a poça', L.pools[0].clean);
+
+  place(87); climbRight(97);
+  ok('alcança o platô pulando', P.x / TS > 96 && stats.deaths === 0, `coluna ${(P.x / TS).toFixed(1)}, mortes ${stats.deaths}`);
+
+  for (const c of [27, 42, 62, 80, 119]) {
+    place(c - 2); P.water = 0; P.face = 1; run(0.35, ['ArrowRight']); run(1);
+    ok(`igarapé da coluna ${c} enche a cabaça`, P.water > 30);
+  }
+
+  place(118); run(0.3); startRain();
+  const before = L.fires.filter(f => f.alive).length; run(10);
+  const putOut = before - L.fires.filter(f => f.alive).length;
+  ok('chuva apaga fogo', putOut > 0, `${putOut} focos`);
+
+  // ---------------------------------------------------------------- xapono → festa → OUTRO → título
+  P.x = L.goalX; run(0.1);
+  ok('chegar no xapono começa a festa', state === 'party', state);
+  run(9); run(0.1, [], ['Enter']);
+  for (let i = 0; i < 3; i++) { run(5); run(0.1, [], ['Enter']); }
+  ok('a história final volta ao título', state === 'title', state);
+} catch (err) {
+  ok('sem erro de execução', false, err.stack);
+}
+out.textContent += `RESULT ${passed} passaram, ${failed} falharam\n`;
+</script>
