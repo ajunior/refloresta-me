@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<!-- The Kernel Show: capetinha de óculos (sorriso de canto, como na folha de poses). Personagem original. -->
+<rect width="512" height="512" rx="90" fill="#d7261e"/>
+<g transform="translate(250 270) scale(2.05)">
+<path d="M 58 60 Q 78 63 80 77" fill="none" stroke="#141414" stroke-width="7" stroke-linecap="round"/>
+<path d="M 0 20 C -22 6 -20 -12 -8 -10 C -2 -9 0 -4 0 0 C 0 -4 2 -9 8 -10 C 20 -12 22 6 0 20 Z" transform="translate(80 77) scale(0.6)" fill="#141414"/>
+<path d="M -48 -65 Q -58 -81 -78 -91 Q -76 -71 -68 -49 Z" fill="#141414" stroke="#141414" stroke-width="6" stroke-linejoin="round"/>
+<path d="M 48 -65 Q 58 -81 78 -91 Q 76 -71 68 -49 Z" fill="#141414" stroke="#141414" stroke-width="6" stroke-linejoin="round"/>
+<ellipse cx="0" cy="0" rx="92" ry="84" fill="#141414"/>
+<path d="M -62 -30 L 62 -30" fill="none" stroke="#d7261e" stroke-width="6" stroke-linecap="round"/>
+<path d="M -64 -30 L -4 -30 Q -4 8 -34 8 Q -64 8 -64 -30 Z" fill="#141414" stroke="#d7261e" stroke-width="6" stroke-linejoin="round"/>
+<path d="M -50 -20 L -38 -20" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+<path d="M 4 -30 L 64 -30 Q 64 8 34 8 Q 4 8 4 -30 Z" fill="#141414" stroke="#d7261e" stroke-width="6" stroke-linejoin="round"/>
+<path d="M 18 -20 L 30 -20" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+<path d="M -18 32 Q 6 50 30 24" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>
